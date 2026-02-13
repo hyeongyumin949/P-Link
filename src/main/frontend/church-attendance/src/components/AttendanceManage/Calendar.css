@@ -1,0 +1,111 @@
+/* ======================================== */
+/* react-calendar 커스텀 덮어쓰기 (전역) */
+/* ======================================== */
+
+/* 캘린더 전체 컨테이너 */
+.react-calendar {
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: transparent; /* 캘린더 배경 투명하게 */ 
+  border: none; /* 캘린더 자체 테두리 제거 */ 
+}
+
+/* 월/연도 네비게이션 (예: 2025년 11월) */
+.react-calendar__navigation button {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #333;
+}
+.react-calendar__navigation button:hover {
+  background-color: #f8f8f8;
+}
+
+/* 요일 (월, 화, 수...) */
+.react-calendar__month-view__weekdays__weekday {
+  text-align: center;
+  font-weight: 600;
+  padding: 0.5em;
+  font-size: 0.75em; 
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  color: #aaaaaa; /* 옅은 회색으로 변경 */
+  text-decoration: none; /* 점선 밑줄 제거 */
+}
+
+
+/* ======================================== */
+/* 🔑 [핵심] 날짜 타일 스타일 (정리됨) */
+/* ======================================== */
+
+/* 1. '모든' 날짜의 '기본' 모양과 색상 */
+.react-calendar__tile {
+  /* 타일 자체는 배경이나 테두리가 없음 */
+  background: none;
+  padding: 2px; /* 원형 모양을 위한 약간의 여백 */
+}
+
+.react-calendar__tile abbr {
+  /* [공통] 모든 날짜의 '모양'을 여기서 정의 (중복 제거) */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px; 
+  height: 40px;
+  margin: 0 auto; 
+  border-radius: 50%; 
+  font-size: 0.9em;
+  text-decoration: none; 
+  
+  /* [기본값] '이번 달' 날짜 색상 */
+  color: #333333;
+  
+  /* [기본값] 테두리와 배경은 투명 */
+  border: 1.5px solid transparent;
+  background-color: transparent;
+}
+
+
+/* 2. [덮어쓰기] '다른 달' 날짜 (27일, 28일...) */
+.react-calendar__tile--neighboringMonth abbr {
+  /* [수정] !important로 다른 스타일을 강제로 덮어씁니다. */
+  color: #aaaaaa !important; 
+}
+
+
+/* 3. [덮어쓰기] '오늘' 날짜 (Nov 2) */
+.react-calendar__tile--now {
+  font-weight: bold; 
+}
+.react-calendar__tile--now abbr {
+  color: #007bff; /* 파란색 텍스트 */ 
+  border-color: #007bff; /* 파란색 테두리 */ 
+}
+
+
+/* 4. [덮어쓰기] '저장된' 날짜 (Nov 1) */
+.react-calendar__tile.data-saved {
+  cursor: pointer !important; 
+  background: none !important; 
+}
+.react-calendar__tile.data-saved abbr {
+  background-color: #007bff; /* 파란색 배경 */ 
+  color: white; /* 흰색 텍스트 */ 
+  font-weight: bold;
+  border-color: transparent; /* '오늘'과 겹칠 시 테두리 제거 */
+}
+
+
+/* 5. [호버] '저장된' 날짜에 마우스 올렸을 때 */
+.react-calendar__tile.data-saved:enabled:hover abbr,
+.react-calendar__tile.data-saved:enabled:focus abbr {
+  background-color: #0056b3; /* 더 진한 파란색 */
+}
+
+
+/* 6. [호버] '저장 안 된' 날짜에 마우스 올렸을 때 */
+.react-calendar__tile:not(.data-saved):enabled:hover,
+.react-calendar__tile:not(.data-saved):enabled:focus {
+  background-color: #f4f9ff; /* 옅은 파란색 배경 */
+  border-radius: 50%; /* 타일 자체를 원형으로 (선택사항) */
+}
