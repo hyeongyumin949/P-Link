@@ -4,10 +4,12 @@ import { Container, Card, Form, Button, Image, FloatingLabel } from 'react-boots
 import apiClient from '../../api/apiClient'; 
 import { useMemberContext } from '../../MemberContext'; 
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() { 
     // Context에서 loginUser 액션 함수를 가져옵니다.
     const { loginUser } = useMemberContext(); 
+    const navigate = useNavigate();
     
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -108,7 +110,12 @@ function LoginPage() {
                 <div className="mt-4 small">
                     <a href="#" className="text-decoration-none mx-2">비밀번호 찾기</a>
                     |
-                    <a href="#" className="text-decoration-none mx-2">회원가입/문의</a>
+                    <button 
+    onClick={(e) => { e.preventDefault(); navigate('/signup'); }} 
+    className="btn btn-link text-decoration-none mx-2 p-0 shadow-none"
+>
+    회원가입/문의
+</button>
                 </div>
 
             </Card.Body>

@@ -2,6 +2,7 @@
 import React from 'react';
 import LoginPage from './components/LoginPage/LoginPage';
 import MainLayout from './components/MainLayout/MainLayout';
+import SignupPage from './components/LoginPage/SignupPage';
 import { MemberProvider, useMemberContext } from './MemberContext'; 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -57,6 +58,7 @@ function App() {
                     <Routes>
                         {/* 7. 경로 설정 */}
                         <Route path="/login" element={<LoginPageWrapper />} />
+                        <Route path="/signup" element={<SignupPage />} />
                         <Route path="/*" element={<ProtectedRoute />} />
                     </Routes>
                 </BrowserRouter>

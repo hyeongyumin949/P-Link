@@ -6,7 +6,7 @@ import axios from 'axios';
 const apiClient = axios.create({
     // React 개발 서버의 proxy 설정이 Spring Boot의 8080 포트로 연결되어 있다고 가정
     // baseURL을 설정하지 않으면 상대 경로(/api/...)로 요청이 전송됨
-    // baseURL: 'http://localhost:8080/', 
+    baseURL: 'http://localhost:8080/', 
     headers: {
         'Content-Type': 'application/json',
     },

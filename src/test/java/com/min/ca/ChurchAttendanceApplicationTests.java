@@ -1,75 +1,69 @@
-package com.min.ca;
+	package com.min.ca;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit; // 👈 1. [중요] Commit 임포트
-import org.springframework.transaction.annotation.Transactional; // 👈 2. [중요] Transactional 임포트
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.min.ca.reservation.ReservationPlace;
-import com.min.ca.reservation.ReservationPlaceRepository;
-
-import java.util.List;
+import com.min.ca.group.ChurchGroup;
+import com.min.ca.group.ChurchGroupRepository;
 
 @SpringBootTest
 class ChurchAttendanceApplicationTests {
 
-    // 3. 장소 리포지토리 주입
     @Autowired
-    private ReservationPlaceRepository reservationPlaceRepository;
+    private ChurchGroupRepository churchGroupRepository;
 
-    /**
-     * 4. [신규] 장소 데이터 주입 테스트
-     * - @Transactional: 이 메서드를 하나의 트랜잭션으로 묶습니다.
-     * - @Commit: 테스트가 성공하면 트랜잭션을 '커밋'하도록 강제합니다. (롤백 방지)
-     */
     @Test
+    @DisplayName("교회 초기 조직도(교구 및 속) 데이터 강제 주입")
     @Transactional
-    @Commit
-    void injectReservationPlaces() {
-        System.out.println("--- 장소 데이터 주입 시작 ---");
-
-        // 5. ReservationPlace.java의 @Builder 사용 [cite: 7]
-        ReservationPlace place1 = ReservationPlace.builder()
-                .name("카페 (카운터)")
-                .description("카페입니다.")
-                .isActive(true)
-                .build();
-
-        ReservationPlace place2 = ReservationPlace.builder()
-                .name("카페 (정수기)")
-                .description("카페입니다.")
-                .isActive(true)
-                .build();
-
-        ReservationPlace place3 = ReservationPlace.builder()
-                .name("교육관")
-                .description("주방과 이어져 있어 왕래가 있습니다.")
-                .isActive(true)
-                .build();
+    @Rollback(false) // 핵심: 테스트가 끝나도 롤백하지 않고 DB에 데이터를 실제로 커밋합니다.
+    public void insertInitialGroups() {
         
-        ReservationPlace place4 = ReservationPlace.builder()
-                .name("아동2교구 예배실")
-                .description("예배실이오니 깨끗하게 사용해주세요.")
-                .isActive(true)
-                .build();
+        // 데이터 중복 삽입 방지를 위해 테이블이 비어있을 때만 실행하게 할 수도 있습니다.
+        // if (churchGroupRepository.count() > 0) return;
 
-        ReservationPlace place5 = ReservationPlace.builder()
-                .name("아동1교구 예배실")
-                .description("예배실이오니 깨끗하게 사용해주세요.")
-                .isActive(true)
-                .build();
+        // 1. 남선교회 1, 2교구 (각 3개 속)
+        createParishAndGroups("남선교회 1교구", 3);
+        createParishAndGroups("남선교회 2교구", 3);
 
-        // 6. 리스트로 묶어서 한번에 저장
-        reservationPlaceRepository.saveAll(List.of(
-            place1, place2, place3, place4, place5
-        ));
+        // 2. 여선교회 1, 2교구 (각 3개 속)
+        createParishAndGroups("여선교회 1교구", 3);
+        createParishAndGroups("여선교회 2교구", 3);
 
-        System.out.println("--- 5개의 장소 데이터 주입 완료 ---");
+        // 3. 아동 1, 2, 3목장 (각 3개 속)
+        createParishAndGroups("아동 1목장", 3);
+        createParishAndGroups("아동 2목장", 3);
+        createParishAndGroups("아동 3목장", 3);
+
+        // 4. 청년회 (3개 속)
+        createParishAndGroups("청년회", 3);
+
+        System.out.println("초기 그룹 데이터 주입이 완료되었습니다!");
     }
 
-    // (기존 contextLoads() 테스트는 그대로 두셔도 됩니다)
-    @Test
-    void contextLoads() {
+    /**
+     * 부모 그룹(교구/목장)을 생성하고, 지정된 개수만큼 자식 그룹(속)을 생성하는 헬퍼 메서드
+     */
+    private void createParishAndGroups(String parishName, int groupCount) {
+        // 1. 부모 그룹(교구) 생성
+        ChurchGroup parish = ChurchGroup.builder()
+                .name(parishName)
+                .parent(null) // 최상위 그룹이므로 parent는 null
+                .build();
+        
+        ChurchGroup savedParish = churchGroupRepository.save(parish);
+
+        // 2. 자식 그룹(속) 생성
+        for (int i = 1; i <= groupCount; i++) {
+            ChurchGroup group = ChurchGroup.builder()
+                    .name(i + "속")
+                    .parent(savedParish) // 방금 만든 교구를 부모로 지정
+                    .build();
+            
+            churchGroupRepository.save(group);
+        }
     }
 }

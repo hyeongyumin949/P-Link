@@ -35,4 +35,25 @@ public class AuthDto {
             this.isYouth = user.isYouth(); 
         }
     }
+    
+    @Getter @Setter
+    public static class SignupRequest {
+        private String username; // 이메일
+        private String password;
+        private String name;
+        private int role;        // 1: 교구장, 2: 속장
+        private Long groupId;    // 최종 선택한 그룹의 ID
+    }
+
+    // --- 그룹 목록 응답 DTO ---
+    @Getter
+    public static class GroupResponse {
+        private final Long id;
+        private final String name;
+
+        public GroupResponse(Long id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+    }
 }

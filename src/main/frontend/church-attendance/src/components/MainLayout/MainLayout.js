@@ -7,6 +7,7 @@ import ParishAttendanceManage from '../ParishAttendanceManage/ParishAttendanceMa
 import { toast } from 'react-toastify';
 import { Container, Row, Col, Card, Navbar, Button } from 'react-bootstrap';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import ApprovalManage from '../ApprovalManage/ApprovalManage';
 
 function MainLayout({ user, onLogout}) {
     const navigate = useNavigate();
@@ -20,6 +21,15 @@ function MainLayout({ user, onLogout}) {
       { id: 6, name: '장소 예약', icon: '🗓️', path: '/reservation' },
     ];
     const features = baseFeatures;
+
+    if (user && (user.role === 0 || user.role === 1)) {
+      baseFeatures.push({ 
+        id: 7, 
+        name: '가입 승인 관리', 
+        icon: '✅', 
+        path: '/approvals' 
+      });
+    }
 
     if (user && (user.role === 1 || user.role === 4)) {
       baseFeatures.push({ 
@@ -146,6 +156,7 @@ function MainLayout({ user, onLogout}) {
                 <Route path="/backup" element={<DataBackup />} />
                 <Route path="/parish-attendance" element={<ParishAttendanceManage user={user} />} />
                 <Route path="/reservation/*" element={<ReservationManage />} />
+                <Route path="/approvals" element={<ApprovalManage />} />
             </Routes>
       </main>
     </div>

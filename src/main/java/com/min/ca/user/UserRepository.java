@@ -12,4 +12,7 @@ import com.min.ca.group.ChurchGroup;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     List<User> findAllByGroupInAndRole(List<ChurchGroup> groups, int role);
+    
+    List<User> findAllByIsActiveFalseAndRole(int role);
+    List<User> findAllByIsActiveFalseAndRoleAndGroup_Parent_Id(int role, Long parentId);
 }

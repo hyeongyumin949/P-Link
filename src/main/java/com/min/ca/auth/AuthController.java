@@ -1,13 +1,19 @@
 package com.min.ca.auth;
 
-import com.min.ca.auth.AuthDto.LoginRequest;
-import com.min.ca.auth.AuthDto.LoginResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails; 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.min.ca.auth.AuthDto.LoginRequest;
+
+import lombok.RequiredArgsConstructor; 
 
 @RestController
 @RequiredArgsConstructor
@@ -48,6 +54,29 @@ public class AuthController {
         } catch (IllegalArgumentException e) {
             // DB에서 사용자를 찾을 수 없는 경우
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+        }
+    }
+    
+    @GetMapping("/groups/top-level")
+    public ResponseEntity<?> getTopLevelGroups() {
+        return ResponseEntity.ok(authService.getTopLevelGroups());
+    }
+
+    // 2. 특정 교구의 하위 속 목록 API
+    @GetMapping("/groups/{parentId}/sub-groups")
+    public ResponseEntity<?> getSubGroups(@PathVariable("parentId") Long parentId) {
+        return ResponseEntity.ok(authService.getSubGroups(parentId));
+    }
+
+    // 3. 회원가입 처리 API
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody AuthDto.SignupRequest request) {
+        try {
+            authService.signup(request);
+            // 성공 시 프론트엔드로 승인 대기 메시지 전달
+            return ResponseEntity.ok("가입 신청이 완료되었습니다. 관리자의 승인을 기다려주세요.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }
